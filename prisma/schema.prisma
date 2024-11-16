@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model historicoveiculo {
+  historico_id           Int       @id @default(autoincrement())
+  veiculo_id             Int?
+  veiculo_data_ult_troca DateTime? @db.Date
+  veiculo                veiculo?  @relation(fields: [veiculo_id], references: [veiculo_id], onDelete: Cascade, map: "historicoveiculo_ibfk_1")
+
+  @@index([veiculo_id], map: "veiculo_id")
+}
+
+model historicovendas {
+  venda_id                                              Int       @id @default(autoincrement())
+  data_venda                                            DateTime? @db.DateTime(0)
+  id_cliente                                            String?   @db.VarChar(11)
+  id_produto                                            Int?
+  id_usuario_venda                                      String?   @db.VarChar(11)
+  id_usuario_pagamento                                  String?   @db.VarChar(11)
+  usuario_historicovendas_id_clienteTousuario           usuario?  @relation("historicovendas_id_clienteTousuario", fields: [id_cliente], references: [cpf_usuario], onDelete: Cascade, map: "historicovendas_ibfk_1")
+  produto                                               produto?  @relation(fields: [id_produto], references: [produto_id], onDelete: Cascade, map: "historicovendas_ibfk_2")
+  usuario_historicovendas_id_usuario_vendaTousuario     usuario?  @relation("historicovendas_id_usuario_vendaTousuario", fields: [id_usuario_venda], references: [cpf_usuario], onDelete: Cascade, map: "historicovendas_ibfk_3")
+  usuario_historicovendas_id_usuario_pagamentoTousuario usuario?  @relation("historicovendas_id_usuario_pagamentoTousuario", fields: [id_usuario_pagamento], references: [cpf_usuario], onDelete: Cascade, map: "historicovendas_ibfk_4")
+
+  @@index([id_cliente], map: "id_cliente")
+  @@index([id_produto], map: "id_produto")
+  @@index([id_usuario_pagamento], map: "id_usuario_pagamento")
+  @@index([id_usuario_venda], map: "id_usuario_venda")
+}
+
+model oficina {
+  id_oficina       Int       @id @default(autoincrement())
+  nome_oficina     String?   @db.VarChar(255)
+  endereco_oficina String?   @db.VarChar(255)
+  produto          produto[]
+}
+
+model produto {
+  produto_id        Int               @id @default(autoincrement())
+  produto_nome      String?           @db.VarChar(255)
+  produto_descricao String?           @db.VarChar(255)
+  produto_preco     Float?            @db.Float
+  produto_marca     String?           @db.VarChar(255)
+  id_oficina        Int?
+  historicovendas   historicovendas[]
+  oficina           oficina?          @relation(fields: [id_oficina], references: [id_oficina], onDelete: Cascade, map: "produto_ibfk_1")
+  relacao           relacao[]
+
+  @@index([id_oficina], map: "id_oficina")
+}
+
+model relacao {
+  id_relacao Int      @id @default(autoincrement())
+  id_cliente String?  @db.VarChar(11)
+  id_veiculo Int?
+  id_produto Int?
+  usuario    usuario? @relation(fields: [id_cliente], references: [cpf_usuario], onDelete: Cascade, map: "relacao_ibfk_1")
+  veiculo    veiculo? @relation(fields: [id_veiculo], references: [veiculo_id], onDelete: Cascade, map: "relacao_ibfk_2")
+  produto    produto? @relation(fields: [id_produto], references: [produto_id], onDelete: Cascade, map: "relacao_ibfk_3")
+
+  @@index([id_cliente], map: "id_cliente")
+  @@index([id_produto], map: "id_produto")
+  @@index([id_veiculo], map: "id_veiculo")
+}
+
+model usuario {
+  cpf_usuario                                                   String            @id @db.VarChar(11)
+  nome_usuario                                                  String?           @db.VarChar(255)
+  tipo_usuario                                                  Int?
+  sobrenome_usuario                                             String?           @db.VarChar(255)
+  email_usuario                                                 String?           @db.VarChar(255)
+  telefone_usuario                                              String?           @db.VarChar(255)
+  senha_usuario                                                 String?           @db.VarChar(255)
+  historicovendas_historicovendas_id_clienteTousuario           historicovendas[] @relation("historicovendas_id_clienteTousuario")
+  historicovendas_historicovendas_id_usuario_vendaTousuario     historicovendas[] @relation("historicovendas_id_usuario_vendaTousuario")
+  historicovendas_historicovendas_id_usuario_pagamentoTousuario historicovendas[] @relation("historicovendas_id_usuario_pagamentoTousuario")
+  relacao                                                       relacao[]
+  veiculo                                                       veiculo[]
+}
+
+model veiculo {
+  veiculo_id       Int                @id @default(autoincrement())
+  veiculo_cor      String?            @db.VarChar(255)
+  veiculo_marca    String?            @db.VarChar(255)
+  veiculo_placa    String?            @unique(map: "veiculo_placa") @db.VarChar(255)
+  veiculo_motor    String?            @db.VarChar(255)
+  veiculo_km       Float?             @db.Float
+  cpf_usuario      String?            @db.VarChar(11)
+  historicoveiculo historicoveiculo[]
+  relacao          relacao[]
+  usuario          usuario?           @relation(fields: [cpf_usuario], references: [cpf_usuario], onDelete: Cascade, map: "veiculo_ibfk_1")
+
+  @@index([cpf_usuario], map: "cpf_usuario")
+}
