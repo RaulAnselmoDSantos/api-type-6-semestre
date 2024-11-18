@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsEmail, IsOptional, IsInt } from 'class-validator';
+import { IsNotEmpty, IsEmail, IsOptional, IsEnum } from 'class-validator';
+import { TipoUsuario } from '../user.types';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -16,7 +17,7 @@ export class CreateUserDto {
   @IsOptional()
   telefone_usuario?: string;
 
-  @IsInt()
-  @IsNotEmpty()
-  tipo_usuario: number; // Exemplo: 1 = cliente, 2 = gerente
+  @IsOptional() // O tipo é opcional no momento da criação
+  @IsEnum(TipoUsuario) // Valida que o valor corresponde a um dos definidos no enum
+  tipo_usuario?: TipoUsuario;
 }

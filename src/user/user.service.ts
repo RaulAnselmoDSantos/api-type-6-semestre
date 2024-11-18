@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { TipoUsuario } from './user.types';
 
 @Injectable()
 export class UserService {
@@ -10,7 +11,10 @@ export class UserService {
   // Criar um novo usuário
   async create(createUserDto: CreateUserDto) {
     return this.prisma.usuario.create({
-      data: createUserDto,
+      data: {
+        ...createUserDto,
+        tipo_usuario: createUserDto.tipo_usuario || TipoUsuario.Cliente, // Cliente como padrão
+      },
     });
   }
 
