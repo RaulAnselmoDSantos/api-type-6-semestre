@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module'; // Importar o PrismaModule
 import { AppControllerAPI } from './app.controller';
-
 import { UserService } from './user/user.service';
 import { UserController } from './user/user.controller';
 

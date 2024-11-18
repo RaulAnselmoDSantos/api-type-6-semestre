@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -11,6 +12,8 @@ async function bootstrap() {
     .setTitle('API Appoo')
     .setDescription('Documentação da API Appoo')
     .setVersion('1.0')
+    .addTag('users')
+    .addTag('veiculos')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/api', app, document); // URL do Swagger: /api
@@ -21,6 +24,11 @@ async function bootstrap() {
     .filter((layer) => layer.route)
     .map((layer) => `${layer.route.stack[0].method.toUpperCase()} ${layer.route.path}`);
   Logger.log(`Available routes: ${JSON.stringify(availableRoutes)}`);
+
+
+  // Habilitar validação global
+  app.useGlobalPipes(new ValidationPipe());
+
 
   await app.listen(process.env.PORT ?? 3000);
 }
