@@ -76,8 +76,9 @@ model agendamento {
 
 model veiculo {
   veiculo_id      Int        @id @default(autoincrement())
-  veiculo_cor     String?    @db.VarChar(255)
   veiculo_marca   String?    @db.VarChar(255)
+  veiculo_modelo  String?    @db.VarChar(255)
+  veiculo_cor     String?    @db.VarChar(255)
   veiculo_placa   String?    @unique @db.VarChar(255)
   veiculo_motor   String?    @db.VarChar(255)
   veiculo_km      Float?
