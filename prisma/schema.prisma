@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL_TEST")
 }
 
 model usuario {
@@ -37,7 +37,7 @@ model produto {
   produto_id        Int          @id @default(autoincrement())
   produto_nome      String?      @db.VarChar(255)
   produto_descricao String?      @db.VarChar(255)
-  produto_preco     Float?       @db.Float
+  produto_preco     Float?       @db.Real
   produto_marca     String?      @db.VarChar(255)
   id_oficina        Int
   oficina           oficina      @relation(fields: [id_oficina], references: [id_oficina], onDelete: Cascade)
