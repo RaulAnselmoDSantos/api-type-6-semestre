@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from '@nestjs/common';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -25,8 +26,19 @@ async function bootstrap() {
 
 
   // Habilitar validação global
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+    transform: true,
+    whitelist: true, // Remove propriedades não definidas no DTO
+    forbidNonWhitelisted: true, // Retorna erro se propriedades não esperadas forem enviadas
+  }),);
 
+
+  app.enableCors({
+    origin: 'TRUE', 
+    methods: 'GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS',
+    credentials: true, 
+  });
 
   await app.listen(process.env.PORT ?? 3000);
 }
