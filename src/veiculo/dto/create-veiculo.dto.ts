@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsNumber, Matches } from 'class-validator';
 
 export class CreateVeiculoDto {
   @IsNotEmpty()
@@ -14,6 +14,7 @@ export class CreateVeiculoDto {
   veiculo_cor?: string;
 
   @IsOptional()
+  @Matches(/^[A-Z]{3}\d{4}$/, { message: 'Placa deve estar no formato ABC1234' }) 
   @IsString()
   veiculo_placa?: string;
 
