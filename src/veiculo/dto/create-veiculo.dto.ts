@@ -14,7 +14,7 @@ export class CreateVeiculoDto {
   veiculo_cor?: string;
 
   @IsOptional()
-  @Matches(/^[A-Z]{3}\d{4}$/, { message: 'Placa deve estar no formato ABC1234' }) 
+  @Matches(/^[A-Z]{3}[0-9]{1}[A-Z]\d{1}$/, { message: 'Placa deve estar no formato ABC1A23' }) 
   @IsString()
   veiculo_placa?: string;
 
