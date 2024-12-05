@@ -12,6 +12,7 @@ async function bootstrap() {
     .setTitle('API Appoo')
     .setDescription('Documentação da API Appoo')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/api', app, document); // URL do Swagger: /api

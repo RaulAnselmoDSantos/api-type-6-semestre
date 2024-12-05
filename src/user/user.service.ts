@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { TipoUsuario } from './user.types';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -10,11 +11,15 @@ export class UserService {
 
   // Criar um novo usuário
   async create(createUserDto: CreateUserDto) {
+    const hashedPassword = await this.hashPassword(createUserDto.senha_usuario);
+    const userData = {
+      ...createUserDto,
+      senha_usuario: hashedPassword,
+      tipo_usuario: createUserDto.tipo_usuario || TipoUsuario.Cliente, // Cliente como padrão
+    };
+  
     return this.prisma.usuario.create({
-      data: {
-        ...createUserDto,
-        tipo_usuario: createUserDto.tipo_usuario || TipoUsuario.Cliente, // Cliente como padrão
-      },
+      data: userData,
     });
   }
 
@@ -43,5 +48,22 @@ export class UserService {
     return this.prisma.usuario.delete({
       where: { id_usuario: id },
     });
+  }
+
+  // Encontrar um usuário por e-mail
+  async findByEmail(email: string){
+    return this.prisma.usuario.findFirst({
+      where: { email_usuario: email}
+    })
+  }
+
+  // Comparar senhas
+  async comparePasswords(password: string, hash: string): Promise<boolean> {
+    return bcrypt.compare(password, hash);
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt();
+    return bcrypt.hash(password, salt);
   }
 }
