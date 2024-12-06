@@ -52,7 +52,7 @@ export class UserService {
 
   // Encontrar um usuário por e-mail
   async findByEmail(email: string){
-    return this.prisma.usuario.findFirst({
+    return this.prisma.usuario.findUnique({
       where: { email_usuario: email}
     })
   }
