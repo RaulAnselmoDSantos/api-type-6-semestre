@@ -1,9 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { VeiculoService } from './veiculo.service';
 import { CreateVeiculoDto } from './dto/create-veiculo.dto';
 import { UpdateVeiculoDto } from './dto/update-veiculo.dto';
-import { ApiTags, ApiOperation, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
+
+@ApiTags('Protected Routes') // Tag para identificação no Swagger
+@ApiBearerAuth() // Indica que a rota requer autenticação JWT
+@UseGuards(JwtAuthGuard)
 @ApiTags('Veiculos') // Adiciona o grupo "Veiculos" no Swagger
 @Controller('veiculos')
 export class VeiculoController {

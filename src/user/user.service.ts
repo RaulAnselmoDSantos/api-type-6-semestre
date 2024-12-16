@@ -4,24 +4,51 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { TipoUsuario } from './user.types';
 import * as bcrypt from 'bcrypt';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // Criar um novo usuário
   async create(createUserDto: CreateUserDto) {
-    const hashedPassword = await this.hashPassword(createUserDto.senha_usuario);
-    const userData = {
-      ...createUserDto,
-      senha_usuario: hashedPassword,
-      tipo_usuario: createUserDto.tipo_usuario || TipoUsuario.Cliente, // Cliente como padrão
-    };
-  
-    return this.prisma.usuario.create({
-      data: userData,
+    // Verifica se o e-mail já existe
+    const usuarioExistente = await this.prisma.usuario.findUnique({
+      where: { email_usuario: createUserDto.email_usuario },
     });
+  
+    if (usuarioExistente) {
+      throw new Error('E-mail já cadastrado');
+    }
+  
+    // Criptografa a senha antes de salvar
+    const saltRounds = 10;
+    const senhaCriptografada = await bcrypt.hash(createUserDto.senha_usuario, saltRounds);
+    console.log('Senha criptografada:', senhaCriptografada); // Verifique a saída
+    
+    try {
+      // Cria o usuário com a senha criptografada
+      return await this.prisma.usuario.create({
+        data: {
+          nome_usuario: createUserDto.nome_usuario,
+          email_usuario: createUserDto.email_usuario,
+          cpf_usuario: createUserDto.cpf_usuario,
+          senha_usuario: senhaCriptografada,
+          telefone_usuario: createUserDto.telefone_usuario,
+          tipo_usuario: createUserDto.tipo_usuario || TipoUsuario.Cliente, // Valor padrão
+        },
+      });
+    } catch (error) {
+      // Captura erros do Prisma, como restrição única
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new Error('O e-mail informado já está em uso.');
+        }
+      }
+      throw error;
+    }
   }
+
 
   // Listar todos os usuários
   async findAll() {
@@ -51,10 +78,10 @@ export class UserService {
   }
 
   // Encontrar um usuário por e-mail
-  async findByEmail(email: string){
+  async findByEmail(email: string) {
     return this.prisma.usuario.findUnique({
-      where: { email_usuario: email}
-    })
+      where: { email_usuario: email },
+    });
   }
 
   // Comparar senhas

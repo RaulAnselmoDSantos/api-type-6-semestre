@@ -3,15 +3,14 @@ import { ApiParam, ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger'
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+// import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@ApiTags('Protected Routes') // Tag para identificação no Swagger
-@ApiBearerAuth() // Indica que a rota requer autenticação JWT
-@UseGuards(JwtAuthGuard)
+
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
+  
+  
   @Post()
   @ApiOperation({ summary: 'Cria um novo usuario' })
   create(@Body() createUserDto: CreateUserDto) {
