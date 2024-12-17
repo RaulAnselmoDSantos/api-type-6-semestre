@@ -6,13 +6,11 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), 
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET,
     });
-    console.log('Cabeçalho Authorization:', ExtractJwt.fromAuthHeaderAsBearerToken());
   }
-  
 
   async validate(payload: any) {
     console.log('Payload recebido no JWT Strategy:', payload);

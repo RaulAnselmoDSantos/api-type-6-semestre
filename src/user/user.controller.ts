@@ -6,23 +6,26 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 
-@Controller('users')
 @UseGuards(JwtAuthGuard)
+@ApiTags('User')
+@ApiBearerAuth('access-token') // Adiciona o esquema de segurança do Bearer
+@Controller('users')
 export class UserController {
  
   constructor(private readonly userService: UserService) {}
   
-  @Post()
-  @ApiOperation({ summary: 'Cria um novo usuario' })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
   
   @Get()
   @ApiOperation({ summary: 'Retorna todos os usuarios' })
   findAll() {
     console.log('Rota protegida acessada');
     return this.userService.findAll();
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Cria um novo usuario' })
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
   }
 
   @Get(':id')
