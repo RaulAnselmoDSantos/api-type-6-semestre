@@ -60,7 +60,6 @@ export class AuthService {
   
     // Verificar senha
     const isPasswordValid = await bcrypt.compare(senha_usuario, user.senha_usuario);
-
     if (!isPasswordValid) {
       console.log('Senha inválida');
       throw new UnauthorizedException('Credenciais inválidas');
