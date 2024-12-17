@@ -68,7 +68,8 @@ export class AuthService {
     // Gerar token JWT
     const payload = { username: user.email_usuario, sub: user.id_usuario };
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { expiresIn: '1h' }),
     };
+
   }
 }

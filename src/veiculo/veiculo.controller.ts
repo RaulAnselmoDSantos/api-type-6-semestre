@@ -6,9 +6,7 @@ import { ApiTags, ApiOperation, ApiParam, ApiBearerAuth } from '@nestjs/swagger'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 
-@ApiTags('Protected Routes') // Tag para identificação no Swagger
-@ApiBearerAuth() // Indica que a rota requer autenticação JWT
-@UseGuards(JwtAuthGuard)
+
 @ApiTags('Veiculos') // Adiciona o grupo "Veiculos" no Swagger
 @Controller('veiculos')
 export class VeiculoController {

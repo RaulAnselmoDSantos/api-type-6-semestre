@@ -3,23 +3,25 @@ import { ApiParam, ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger'
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-// import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UserController {
+ 
   constructor(private readonly userService: UserService) {}
-  
   
   @Post()
   @ApiOperation({ summary: 'Cria um novo usuario' })
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
-
+  
   @Get()
   @ApiOperation({ summary: 'Retorna todos os usuarios' })
   findAll() {
+    console.log('Rota protegida acessada');
     return this.userService.findAll();
   }
 

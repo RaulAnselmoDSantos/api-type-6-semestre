@@ -10,7 +10,7 @@ async function bootstrap() {
   // Configuração do Swagger
   const config = new DocumentBuilder()
     .setTitle('API Appoo')
-    .setDescription('Documentação da API Appoo')
+    .setDescription('Documentação da API Appoo - Protegida com JWT')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
