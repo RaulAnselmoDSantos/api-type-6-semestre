@@ -6,8 +6,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Public } from '../auth/public.decorator';
 
-// @ApiTags('User')
-// @ApiBearerAuth('access-token') // Adiciona o esquema de segurança do Bearer
+@ApiTags('User')
+@ApiBearerAuth('access-token') // Adiciona o esquema de segurança do Bearer
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
