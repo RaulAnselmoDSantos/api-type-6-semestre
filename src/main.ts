@@ -14,8 +14,10 @@ async function bootstrap() {
     .setVersion('1.0')
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'access-token')
     .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/api', app, document); // URL do Swagger: /api
+    const document = SwaggerModule.createDocument(app, config, {
+      ignoreGlobalPrefix: true,
+    });
+    SwaggerModule.setup('/api', app, document);
 
   const server = app.getHttpServer();
   const router = server._events.request._router;
