@@ -6,7 +6,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 
-@UseGuards(JwtAuthGuard)
+
 @ApiTags('User')
 @ApiBearerAuth('access-token') // Adiciona o esquema de segurança do Bearer
 @Controller('users')
@@ -14,7 +14,7 @@ export class UserController {
  
   constructor(private readonly userService: UserService) {}
   
-  
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({ summary: 'Retorna todos os usuarios' })
   findAll() {
@@ -28,6 +28,7 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Retorna um dos usuarios pelo ID' })
   @ApiParam({ name: 'id', type: Number })
@@ -35,6 +36,7 @@ export class UserController {
     return this.userService.findOne(+id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @ApiOperation({ summary: 'Atualiza um usuario pelo ID' })
   @ApiParam({ name: 'id', type: Number })
@@ -42,6 +44,7 @@ export class UserController {
     return this.userService.update(+id, updateUserDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @ApiOperation({ summary: 'Deleta um usuario pelo ID' })
   @ApiParam({ name: 'id', type: Number })
