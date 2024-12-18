@@ -1,12 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiParam, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { ApiParam, ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
+
+
+@ApiTags('User')
+@ApiBearerAuth('access-token') // Adiciona o esquema de segurança do Bearer
 @Controller('users')
 export class UserController {
+ 
   constructor(private readonly userService: UserService) {}
+  
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  @ApiOperation({ summary: 'Retorna todos os usuarios' })
+  findAll() {
+    console.log('Rota protegida acessada');
+    return this.userService.findAll();
+  }
 
   @Post()
   @ApiOperation({ summary: 'Cria um novo usuario' })
@@ -14,12 +28,7 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Retorna todos os usuarios' })
-  findAll() {
-    return this.userService.findAll();
-  }
-
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Retorna um dos usuarios pelo ID' })
   @ApiParam({ name: 'id', type: Number })
@@ -27,6 +36,7 @@ export class UserController {
     return this.userService.findOne(+id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @ApiOperation({ summary: 'Atualiza um usuario pelo ID' })
   @ApiParam({ name: 'id', type: Number })
@@ -34,6 +44,7 @@ export class UserController {
     return this.userService.update(+id, updateUserDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @ApiOperation({ summary: 'Deleta um usuario pelo ID' })
   @ApiParam({ name: 'id', type: Number })
