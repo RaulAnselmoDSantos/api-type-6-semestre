@@ -11,7 +11,7 @@ model usuario {
   id_usuario        Int          @id @default(autoincrement())
   cpf_usuario       String       @unique @db.VarChar(11)
   nome_usuario      String?      @db.VarChar(255)
-  tipo_usuario      Int          // Exemplo: 1 = cliente, 2 = gerente, 3 = admin
+  tipo_usuario      String          // Exemplo: 1 = cliente, 2 = gerente, 3 = admin
   email_usuario     String?      @unique @db.VarChar(255)
   senha_usuario     String?      @db.VarChar(255)
   telefone_usuario  String?      @db.VarChar(255)
