@@ -43,13 +43,23 @@ export class UserController {
   }
 
   @Patch(':id')
-  @Roles(Role.Admin)
+  @Roles(Role.Admin, Role.Comum) // Admin e usuários comuns podem acessar
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @ApiOperation({ summary: 'Atualiza um usuário pelo ID' })
+  @ApiOperation({ summary: 'Atualiza informações do usuário' })
   @ApiParam({ name: 'id', type: Number })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Req() req) {
+    const user = req.user; // Usuário autenticado
+    const targetUserId = +id; // ID do usuário que está sendo atualizado
+
+    // Verifica se o usuário é comum e está tentando atualizar outro usuário
+    if (user.role === Role.Comum && user.id_usuario !== targetUserId) {
+      throw new ForbiddenException('Você só pode atualizar suas próprias informações.');
+    }
+
+    // Admin pode atualizar qualquer usuário, ou o próprio usuário comum
+    return this.userService.update(targetUserId, updateUserDto);
   }
+
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
