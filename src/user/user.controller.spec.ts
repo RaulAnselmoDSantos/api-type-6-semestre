@@ -64,8 +64,8 @@ describe('UserController', () => {
   });
 
   it('should remove a user', async () => {
-    const result = await controller.remove('1');
+    const result = await controller.remove('1', { algumOutroParametro: 'valor' });
     expect(result).toEqual({ message: 'User removed successfully' });
-    expect(service.remove).toHaveBeenCalledWith(1); // Verifica se o método remove foi chamado corretamente
+    expect(service.remove).toHaveBeenCalledWith(1, { algumOutroParametro: 'valor' }); // Verifica se o método remove foi chamado corretamente
   });
 });
