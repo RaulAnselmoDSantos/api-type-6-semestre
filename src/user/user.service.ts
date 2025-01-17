@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { TipoUsuario } from './user.types';
 import * as bcrypt from 'bcrypt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { Role } from 'src/auth/roles.enum';
 
 
 @Injectable()
@@ -39,7 +39,7 @@ export class UserService {
           cpf_usuario: createUserDto.cpf_usuario,
           senha_usuario: senhaCriptografada,
           telefone_usuario: createUserDto.telefone_usuario,
-          tipo_usuario: createUserDto.tipo_usuario || TipoUsuario.Cliente, // Valor padrão
+          tipo_usuario: createUserDto.tipo_usuario || Role.Comum, // Valor padrão
         },
       });
     } catch (error) {

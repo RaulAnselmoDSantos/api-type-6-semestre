@@ -66,7 +66,7 @@ export class AuthService {
     }
   
     // Gerar token JWT
-    const payload = { username: user.email_usuario, sub: user.id_usuario };
+    const payload = { username: user.email_usuario, sub: user.id_usuario, role: user.tipo_usuario };
     const access_token = this.jwtService.sign(payload, { expiresIn: '1d' });
     console.log('Token gerado:', access_token); // Log para verificar se o token está sendo gerado corretamente
     return {
