@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -68,11 +68,18 @@ export class UserService {
 
   // Atualizar um usuário por ID
   async update(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.prisma.usuario.findUnique({ where: { id_usuario: id } });
+  
+    if (!user) {
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado.`);
+    }
+  
     return this.prisma.usuario.update({
       where: { id_usuario: id },
       data: updateUserDto,
     });
   }
+  
 
   // Remover um usuário por ID
   async remove(id: number) {
