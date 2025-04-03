@@ -1,8 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, ForbiddenException } from '@nestjs/common';
+import { 
+  Controller, 
+  Get, 
+  Post, 
+  Body, 
+  Patch, 
+  Param, 
+  Delete, 
+  UseGuards, 
+  Req, 
+  ForbiddenException 
+} from '@nestjs/common';
 import { ApiParam, ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto'; // DTO de alteração de senha
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Public } from '../auth/public.decorator';
 import { RolesGuard } from '../auth/roles.guard';
@@ -18,7 +30,6 @@ export class UserController {
   
   @Get()
   @Roles(Role.Admin) // Apenas usuários com a role ADMIN podem acessar essa rota
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Retorna todos os usuários' })
   findAll() {
     console.log('Rota protegida acessada');
@@ -33,9 +44,7 @@ export class UserController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @Roles(Role.Admin) // Apenas usuários com a role ADMIN podem acessar essa rota
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Retorna um dos usuários pelo ID' })
   @ApiParam({ name: 'id', type: Number })
   findOne(@Param('id') id: string) {
@@ -44,10 +53,13 @@ export class UserController {
 
   @Patch(':id')
   @Roles(Role.Admin, Role.Comum) // Admin e usuários comuns podem acessar
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Atualiza informações do usuário' })
   @ApiParam({ name: 'id', type: Number })
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Req() req) {
+  async update(
+    @Param('id') id: string, 
+    @Body() updateUserDto: UpdateUserDto, 
+    @Req() req
+  ) {
     const user = req.user; // Usuário autenticado
     const targetUserId = +id; // ID do usuário que está sendo atualizado
 
@@ -56,24 +68,42 @@ export class UserController {
       throw new ForbiddenException('Você só pode atualizar suas próprias informações.');
     }
 
-    // Admin pode atualizar qualquer usuário, ou o próprio usuário comum
     return this.userService.update(targetUserId, updateUserDto);
   }
 
-
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin, Role.Comum) // Apenas admin e usuário comum podem acessar
   @ApiOperation({ summary: 'Exclui uma conta de usuário' })
   @ApiParam({ name: 'id', type: Number })
   async remove(@Param('id') id: string, @Req() req) {
-    const user = req.user; // O usuário autenticado que fez a requisição
-    const userIdToDelete = +id; // ID da conta a ser excluída
+    const user = req.user;
+    const userIdToDelete = +id;
 
     if (user.role === Role.Comum && user.id_usuario !== userIdToDelete) {
       throw new ForbiddenException('Você só pode excluir sua própria conta.');
     }
 
     return this.userService.remove(userIdToDelete);
+  }
+
+  // Adicionar rota para alteração de senha
+  @Patch(':id/password')
+  @Roles(Role.Admin, Role.Comum) // Admin e usuário comum podem acessar
+  @ApiOperation({ summary: 'Atualiza a senha do usuário' })
+  @ApiParam({ name: 'id', type: Number })
+  async updatePassword(
+    @Param('id') id: string, 
+    @Body() updatePasswordDto: UpdatePasswordDto, 
+    @Req() req
+  ) {
+    const user = req.user; // Usuário autenticado
+    const targetUserId = +id;
+
+    // Usuário comum só pode alterar sua própria senha
+    if (user.role === Role.Comum && user.id_usuario !== targetUserId) {
+      throw new ForbiddenException('Você só pode alterar sua própria senha.');
+    }
+
+    return this.userService.updatePassword(targetUserId, updatePasswordDto, user.role === Role.Admin);
   }
 }
