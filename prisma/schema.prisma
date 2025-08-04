@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL_TEST")
+  url      = env("DATABASE_URL")
 }
 
 model usuario {
@@ -16,8 +16,8 @@ model usuario {
   senha_usuario     String?      @db.VarChar(255)
   telefone_usuario  String?      @db.VarChar(255)
   oficinas          oficina[]    @relation("UsuarioOficina")
-  agendamentos      agendamento[] // Caso este usuário seja cliente de agendamentos
-  veiculos          veiculo[]    // Veículos do cliente (se tipo_usuario = cliente)
+  agendamentos      agendamento[] 
+  veiculos          veiculo[]    
 }
 
 model oficina {
